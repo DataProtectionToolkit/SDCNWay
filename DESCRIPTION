@@ -1,0 +1,25 @@
+Package: SDCNway
+Depends: R (>= 3.6.0)
+Imports:
+	methods,
+    plyr (>= 1.8.5),
+    dplyr (>= 0.8.4),
+    ggplot2 (>= 3.2.1),
+    MASS (>= 3.6.0),
+    Rdpack
+RdMacros: Rdpack
+Title: Tools to evaluate disclosure risk
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "John",
+             family = "Riddles",
+             role = c("aut", "cre"),
+             email = "JohnRiddles@westat.com"),
+      person("Westat", role = "cph"))
+Description: A package for calculating disclosure risk measures. This includes
+    record-level measures primarily using exhaustive tabulation, as well as
+    file-level measures using a loglinear model.
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
