@@ -1,3 +1,6 @@
+#' sdc_loglinear
+#' 
+#' @description
 #' Calculates file-level risk measures using a loglinear model.
 #' 
 #' @param data Data frame containing the data to be evaluated.
@@ -92,10 +95,17 @@ sdc_loglinear <- function(data,
 } # end 'loglinear_nway'
 
 # ------------------------------------------------------------------------------
-
-#' @describein sdc_loglinear Calculates file-level risk measures using a
-#'   loglinear model with forwardsearch for variable selection.
+#' sdc_loglinear_iter
 #' 
+#' @description
+#' Calculates file-level risk measures using a loglinear model with forward
+#' stepwise variable selection for interaction terms.
+#' @param data Data frame containing the data to be evaluated.
+#' @param weight Column name for sampling weights.
+#' @param varpool Vector of column names to be used in model.
+#' @param numiter Maximum number of iterations to run iterative proportional 
+#'   fitting for the loglinear model.
+#' @param epsilon Maximum deviation allowed between observed and fitted margins.
 #' @param fixed_pi If TRUE, sampling rate assumed to be the same across cells.
 #' @param intermediate_fname Name of intermediate rds file. At each iteration of
 #'    variable selection, the results so far are saved to this file. This file
@@ -107,10 +117,16 @@ sdc_loglinear <- function(data,
 #'   are all negative.
 #' @param verbose If TRUE, print updates to console at each iteration of the
 #'   variable selection process.
+#' @param blanks_as_missing If TRUE, character and factor variables that are
+#'   blank or pure whitespace are treated as missing values.
+#' @param output_filename Name of the csv file to save the data set with 
+#'   record-level risk measures, .tau1_rec and .tau2_rec, attached. NULL if no 
+#'   output file is to be saved.
 #' 
 #' @return An object of type \code{sdc_loglinear_iter} containing calculated 
 #' risk measures.
-#' #' data(exampledata)
+#' @examples
+#' data(exampledata)
 #' vars <- c("BORNUSA", "CENREG", "DAGE3", "DRACE3", "EDUC3", "GENDER")
 #' wgt <- "WEIGHT"
 #'
@@ -710,47 +726,6 @@ loglinear_workhorse_flex <- function(data,
 
 # ------------------------------------------------------------------------------
 
-#' @describeIn sdc_loglinear S3 print method for sdc_loglinear_iter objects
-#' 
-#' Prints summary of iterative loglinear fit.
-#' 
-#' @param x Object of class sdc_loglinear_iter, as returned by sdc_loglinear.
-#' @param summary_outfile Name of summary output .txt file. If not NULL, console
-#'   output is copied to the file. Default is NULL (no logging of output).
-#'   Errors and warnings are not diverted (consider running in batch mode if
-#'   logging is needed).
-#' @param ... Currently unused. For NextMethod compatibility.
-#' @export
-print.sdc_loglinear_iter <- function(x,
-                                     summary_outfile=NULL,
-                                     ...) {
-  # Log output if requested ----------------------------------------------------
-
-  if(!is.null(summary_outfile)) {
-
-    stopifnot(is.character(summary_outfile))
-
-    conn <- file(summary_outfile)
-    sink(conn, append=FALSE, split=TRUE)
-
-    on.exit(sink())
-    on.exit(close(conn), add=TRUE)
-
-  } # end if
-
-  cat("Statistics:\n")
-  print(x$statistics)
-  cat("\nFinal terms:\n")
-  print(x$terms)
-  cat("\nAll iterations:\n")
-  print(x$all_fits)
-
-  return(invisible(NULL))
-
-}
-
-# ------------------------------------------------------------------------------
-
 #' @describeIn sdc_loglinear S3 print method for sdc_loglinear objects
 #' 
 #' Prints tables of file-level reidentification risk measures.
@@ -833,6 +808,47 @@ loglinear_print_workhorse <- function(ll_table, degree) {
   return(invisible(NULL))
 
 } # end 'loglinear_print_workhorse'
+
+# ------------------------------------------------------------------------------
+
+#' @describeIn sdc_loglinear_iter S3 print method for sdc_loglinear_iter objects
+#' 
+#' Prints summary of iterative loglinear fit.
+#' 
+#' @param x Object of class sdc_loglinear_iter, as returned by sdc_loglinear.
+#' @param summary_outfile Name of summary output .txt file. If not NULL, console
+#'   output is copied to the file. Default is NULL (no logging of output).
+#'   Errors and warnings are not diverted (consider running in batch mode if
+#'   logging is needed).
+#' @param ... Currently unused. For NextMethod compatibility.
+#' @export
+print.sdc_loglinear_iter <- function(x,
+                                     summary_outfile=NULL,
+                                     ...) {
+  # Log output if requested ----------------------------------------------------
+
+  if(!is.null(summary_outfile)) {
+
+    stopifnot(is.character(summary_outfile))
+
+    conn <- file(summary_outfile)
+    sink(conn, append=FALSE, split=TRUE)
+
+    on.exit(sink())
+    on.exit(close(conn), add=TRUE)
+
+  } # end if
+
+  cat("Statistics:\n")
+  print(x$statistics)
+  cat("\nFinal terms:\n")
+  print(x$terms)
+  cat("\nAll iterations:\n")
+  print(x$all_fits)
+
+  return(invisible(NULL))
+
+}
 
 # ------------------------------------------------------------------------------
 
@@ -1014,8 +1030,19 @@ plot.sdc_loglinear <- function(x,
 } # end 'plot.sdc_loglinear'
 # ------------------------------------------------------------------------------
 
-#' @describeIn sdc_loglinear S3 plot method for \code{sdc_loglinear_iter} 
+#' @describeIn sdc_loglinear_iter S3 plot method for \code{sdc_loglinear_iter} 
 #'   objects
+#' 
+#' Produces boxplots and scatterplots of record-level risk measures, tau1 and
+#' tau2.
+#' 
+#' @param plotpath Directory to save plots. Plots are saved as \emph{jpeg} files 
+#'   (quality = 100\%). If the directory does not exist, it is first created.
+#'   If \code{plotpath} is NULL (default), plots are not saved.
+#' @param plotvar1 A vector of names of discrete variables for boxplots. If 
+#'   none, boxplots are not produced.
+#' @param plotvar2 A vector of names of continuous variables for scatterplots. 
+#'   If none, scatterplots are not produced.
 #' @export
 plot.sdc_loglinear_iter <- plot.sdc_loglinear
 
