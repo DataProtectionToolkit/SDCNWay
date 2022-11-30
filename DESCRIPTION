@@ -1,5 +1,5 @@
 Package: SDCNway
-Depends: R (>= 3.6.0)
+Depends: R (>= 4.1.1)
 Imports:
 	methods,
     plyr (>= 1.8.5),
@@ -9,7 +9,7 @@ Imports:
     Rdpack
 RdMacros: Rdpack
 Title: Tools to evaluate disclosure risk
-Version: 0.0.0.9000
+Version: 1.1.0
 Authors@R: 
     c(person(given = "John",
              family = "Riddles",
