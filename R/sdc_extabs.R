@@ -135,6 +135,8 @@ sdc_extabs <- function(data,
                           condition,
                           output_filename)
 
+  data <- as.data.frame(data)
+  
   # Adjust condition if needed -------------------------------------------------
 
   if(!is.null(condition))
