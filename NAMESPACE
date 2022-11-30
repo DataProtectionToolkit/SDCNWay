@@ -2,10 +2,13 @@
 
 S3method(plot,sdc_extabs)
 S3method(plot,sdc_loglinear)
+S3method(plot,sdc_loglinear_iter)
 S3method(print,sdc_extabs)
 S3method(print,sdc_loglinear)
+S3method(print,sdc_loglinear_iter)
 export(sdc_extabs)
 export(sdc_loglinear)
+export(sdc_loglinear_iter)
 importFrom(Rdpack,reprompt)
 importFrom(grDevices,dev.new)
 importFrom(grDevices,dev.off)
